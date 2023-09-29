@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:time_tracker/views/categories_screen.dart';
+import 'package:time_tracker/views/home_screen.dart';
 // import 'package:time_tracker/views/splash_screen.dart';
 
 class AppRouter {
@@ -10,7 +11,7 @@ class AppRouter {
   static List<GetPage> routes = [
     GetPage(
       name: initial,
-      page: () => const CategoriesScreen(),
+      page: () => const HomeScreen(),
     ),
     GetPage(
       name: category,

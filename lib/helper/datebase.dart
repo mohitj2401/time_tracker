@@ -28,8 +28,11 @@ class DatabaseHelper {
     _database = await openDatabase(
       path,
       version: 3,
-      onCreate: (db, version) {
-        db.execute('''
+      onConfigure: (Database db) async {
+        await db.execute("PRAGMA foreign_keys = ON");
+      },
+      onCreate: (db, version) async {
+        await db.execute('''
         CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name VARCHAR(50),
@@ -37,7 +40,24 @@ class DatabaseHelper {
    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 
-)
+);
+
+        ''');
+        await db.execute('''
+ CREATE TABLE tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name VARCHAR(255),
+    description VARCHAR(255),
+    category_id INT,
+    
+    date DATE,
+    time TIME,
+   
+   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (category_id) REFERENCES categories(id)
+
+);
         ''');
       },
     );

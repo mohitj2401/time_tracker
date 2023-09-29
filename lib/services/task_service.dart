@@ -1,26 +1,24 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
+import 'package:time_tracker/models/tasks.dart';
 
-class CategoryService {
-  String tableName = 'categories';
+class TaskService {
+  String tableName = 'tasks';
 
-  Future<int> insertTask(Category category) async {
+  Future<int> insertTask(Tasks tasks) async {
     Database database = await DatabaseHelper().database;
-    return await database.insert(tableName, category.toMap());
+    return await database.insert(tableName, tasks.toMap());
   }
 
-  Future<List<Category>> getAllCategory() async {
+  Future<List<Tasks>> getAllTask() async {
     Database database = await DatabaseHelper().database;
 
     final List<Map<String, dynamic>> maps =
         await database.query(tableName, orderBy: 'created_at DESC');
     // print(maps);
     return List.generate(maps.length, (i) {
-      return Category(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-      );
+      return Tasks.fromMap(maps[i]);
     });
   }
 

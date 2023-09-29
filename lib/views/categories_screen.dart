@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
@@ -16,7 +18,7 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   List<Category> categories = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
-  CatogoryService service = CatogoryService();
+  CategoryService service = CategoryService();
   List<DropdownMenuItem> items = [];
   // String selectedType = 'select';
   TextEditingController categoryText = TextEditingController();
@@ -45,7 +47,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   getCategory() async {
-    categories = await service.getAllTasks();
+    categories = await service.getAllCategory();
     setState(() {});
   }
 
@@ -128,24 +130,36 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               // width: 100.w,
               child: ListView.builder(
                 itemBuilder: (context, index) {
-                  return Container(
+                  return Card(
+                    elevation: 2,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: Text((index + 1).toString()),
                             ),
                             Text(categories[index].name!),
                           ],
                         ),
-                        IconButton(
-                          onPressed: () {
-                            deleteCategory(categories[index].id!);
-                          },
-                          icon: const Icon(Icons.delete),
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                // deleteCategory(categories[index].id!);
+                              },
+                              icon: const Icon(Icons.edit),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                deleteCategory(categories[index].id!);
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ],
                         )
                       ],
                     ),
@@ -156,6 +170,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        onTap: (int value) {
+          if (value == 0) {
+            Get.toNamed('/');
+          }
+          // logger.i(value);
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.category), label: 'Category'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Report'),
+        ],
       ),
     );
   }
