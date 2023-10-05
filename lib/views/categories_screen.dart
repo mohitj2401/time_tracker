@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
@@ -179,7 +178,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           }
           // logger.i(value);
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
               icon: Icon(Icons.category), label: 'Category'),

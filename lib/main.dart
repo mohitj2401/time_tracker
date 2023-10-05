@@ -12,7 +12,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (BuildContext context) => new ThemeProviders()),
+            create: (BuildContext context) => ThemeProviders()),
       ],
       child: const MyApp(),
     ),

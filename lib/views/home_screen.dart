@@ -42,17 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getCategory() async {
     CategoryService service = CategoryService();
-    items.add(DropdownMenuItem(
-      child: Text("Select Task Catgeory"),
+    items.add(const DropdownMenuItem(
       value: 0,
+      child: Text("Select Task Catgeory"),
     ));
     service.getAllCategory().then((value) {
-      value.forEach((element) {
+      for (var element in value) {
         items.add(DropdownMenuItem(
-          child: Text(element.name!),
           value: element.id,
+          child: Text(element.name!),
         ));
-      });
+      }
       getTask();
     });
   }
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   saveTask() {
-    Tasks task = new Tasks(
+    Tasks task = Tasks(
       category_id: selectedItem,
       date: date.text,
       time: '00:00:00',
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // backgroundColor: ThemeProvide.appColor,
         automaticallyImplyLeading: false,
         elevation: 0.0,
-        title: Text(
+        title: const Text(
           'Time Tracker',
           // style: ThemeProvider.titleStyle,
         ),
@@ -196,9 +196,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       context: context,
                                       initialDate: DateTime.now(),
                                       firstDate: DateTime.now()
-                                          .subtract(Duration(days: 365)),
+                                          .subtract(const Duration(days: 365)),
                                       lastDate: DateTime.now()
-                                          .add(Duration(days: 30)),
+                                          .add(const Duration(days: 30)),
                                     );
                                     if (d != null) {
                                       date.text = d.toString().split(' ')[0];
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onPressed: () {
                                     saveTask();
                                   },
-                                  child: Text('Save'))
+                                  child: const Text('Save'))
                             ],
                           );
                         },
@@ -276,12 +276,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             },
-            icon: Icon(Icons.add_circle_outline),
+            icon: const Icon(Icons.add_circle_outline),
           )
         ],
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           children: [
             ListView.builder(
@@ -297,15 +297,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Row(
                               children: [
                                 Text((index + 1).toString()),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(tasks[index].name),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -327,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
                                       displayTime,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 20,
                                           fontFamily: 'Helvetica',
                                           fontWeight: FontWeight.bold),
@@ -355,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               pref.setBool('TIMER_EXIST', false);
                               setState(() {});
                             },
-                            icon: Icon(Icons.pause_circle),
+                            icon: const Icon(Icons.pause_circle),
                           ),
                         ],
                       ),
@@ -376,15 +376,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Row(
                               children: [
                                 Text((index + 1).toString()),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(tasks[index].name),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -414,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   pref.setInt('TIMER_ID', selectedTimer);
                                   setState(() {});
                                 },
-                                icon: Icon(Icons.play_circle),
+                                icon: const Icon(Icons.play_circle),
                               ),
                               IconButton(
                                 onPressed: () async {
@@ -429,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     setState(() {});
                                   }
                                 },
-                                icon: Icon(Icons.delete),
+                                icon: const Icon(Icons.delete),
                               ),
                               IconButton(
                                 onPressed: () async {
@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     setState(() {});
                                   }
                                 },
-                                icon: Icon(Icons.restore),
+                                icon: const Icon(Icons.restore),
                               ),
                             ],
                           ),
@@ -465,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           logger.i(value);
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
               icon: Icon(Icons.category), label: 'Category'),
