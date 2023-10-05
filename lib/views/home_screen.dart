@@ -319,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               final value = snap.data;
                               selectedTimerTime = value!;
                               final displayTime = StopWatchTimer.getDisplayTime(
-                                  value!,
+                                  value,
                                   milliSecond: false);
                               return Column(
                                 children: <Widget>[

@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
-import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/models/tasks.dart';
 
 class TaskService {
