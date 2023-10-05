@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
+import 'package:time_tracker/util/toast.dart';
 
 class CategoryService {
   String tableName = 'categories';
@@ -37,11 +38,16 @@ class CategoryService {
 
   Future<int> deleteTask(int id) async {
     Database database = await DatabaseHelper().database;
+    try {
+      return await database.delete(
+        tableName,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } catch (e) {
+      showToast("Remove Task assoiciated to this category ", isError: true);
 
-    return await database.delete(
-      tableName,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+      return 0;
+    }
   }
 }

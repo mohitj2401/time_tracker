@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/tasks.dart';
@@ -12,9 +13,17 @@ class TaskService {
 
   Future<List<Tasks>> getAllTask() async {
     Database database = await DatabaseHelper().database;
-
-    final List<Map<String, dynamic>> maps =
-        await database.query(tableName, orderBy: 'created_at DESC');
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    // print(formattedDate);
+    final List<Map<String, dynamic>> maps = await database.query(tableName,
+        orderBy: 'created_at DESC',
+        where: 'date = ?',
+        whereArgs: [formattedDate]);
+    // final List<Map<String, dynamic>> maps = await database.query(
+    //   tableName,
+    //   orderBy: 'created_at DESC',
+    // );
     // print(maps);
     return List.generate(maps.length, (i) {
       return Tasks.fromMap(maps[i]);

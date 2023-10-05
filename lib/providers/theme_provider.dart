@@ -8,6 +8,7 @@ class ThemeProviders extends ChangeNotifier {
     ThemeData.light(useMaterial3: true),
   ];
   ThemeData get themeData => themes[_theme_number];
+  int get theme_number => _theme_number;
 
   updateTheme(int themeNumber) {
     _theme_number = _theme_number == 1 ? 0 : 1;

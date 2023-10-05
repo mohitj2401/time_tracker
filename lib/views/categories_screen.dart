@@ -40,9 +40,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   deleteCategory(int id) {
-    service.deleteTask(id);
+    try {
+      service.deleteTask(id);
+      getCategory();
+    } catch (e) {
+      showToast("Remove Task assoiciated to this category First",
+          isError: true);
+    }
     // categories.removeWhere((element) => element.id == id);
-    getCategory();
   }
 
   getCategory() async {
@@ -176,7 +181,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           if (value == 0) {
             Get.toNamed('/');
           }
-          // logger.i(value);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

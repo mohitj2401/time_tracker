@@ -1,6 +1,7 @@
 import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -63,9 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   saveTask() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     Tasks task = Tasks(
       category_id: selectedItem,
-      date: date.text,
+      date: formattedDate,
       time: '00:00:00',
       name: name.text,
       description: description.text,
@@ -150,11 +153,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Container(
-                                child: const Text(
-                                  "Add Task",
-                                  style: TextStyle(fontSize: 18),
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    child: const Text(
+                                      "Add Today's Task",
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (name.text.isNotEmpty &&
+                                          selectedItem > 0) {
+                                        saveTask();
+                                      } else {
+                                        showToast(
+                                            "Please Enter Task Field or Select Category",
+                                            isError: true);
+                                      }
+                                    },
+                                    child: Text('Save'),
+                                  )
+                                ],
                               ),
                               SizedBox(
                                 height: 20.sp,
@@ -191,61 +213,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Container(
                                 child: TextFormField(
-                                  onTap: () async {
-                                    DateTime? d = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime.now()
-                                          .subtract(const Duration(days: 365)),
-                                      lastDate: DateTime.now()
-                                          .add(const Duration(days: 30)),
-                                    );
-                                    if (d != null) {
-                                      date.text = d.toString().split(' ')[0];
-                                    }
-                                  },
-                                  controller: date,
-                                  cursorColor: ThemeProvider.whiteColor,
-                                  style: const TextStyle(fontSize: 16),
-                                  decoration: const InputDecoration(
-                                    // contentPadding: EdgeInsets.zero,
-                                    hintText: 'Date',
-                                    border: OutlineInputBorder(),
-                                    hintStyle: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              // Container(
-                              //   child: TextFormField(
-                              //     controller: time,
-                              //     cursorColor: ThemeProvider.whiteColor,
-                              //     style: const TextStyle(fontSize: 16),
-                              //     decoration: const InputDecoration(
-                              //       // contentPadding: EdgeInsets.zero,
-                              //       hintText: 'Time',
-                              //       border: OutlineInputBorder(),
-                              //       hintStyle: TextStyle(fontSize: 16),
-                              //     ),
-                              //     onTap: () async {
-                              //       Duration? duration =
-                              //           await showDurationPicker(
-                              //               context: context,
-                              //               initialTime: Duration(minutes: 30));
-                              //       if (duration != null) {
-                              //         time.text =
-                              //             duration.toString().split('.')[0];
-                              //       }
-                              //     },
-                              //   ),
-                              // ),
-                              // const SizedBox(
-                              //   height: 10,
-                              // ),
-                              Container(
-                                child: TextFormField(
                                   minLines: 3,
                                   maxLines: 5,
                                   controller: description,
@@ -262,11 +229,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(
                                 height: 15,
                               ),
-                              ElevatedButton(
-                                  onPressed: () {
-                                    saveTask();
-                                  },
-                                  child: const Text('Save'))
+                              // ElevatedButton(
+                              //     onPressed: () {
+                              //       saveTask();
+                              //     },
+                              //     child: const Text('Save'))
                             ],
                           );
                         },
@@ -277,6 +244,14 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             icon: const Icon(Icons.add_circle_outline),
+          ),
+          IconButton(
+            onPressed: () {
+              themeProvider.updateTheme(1);
+            },
+            icon: themeProvider.theme_number == 0
+                ? Icon(Icons.light_mode_outlined)
+                : Icon(Icons.dark_mode_outlined),
           )
         ],
       ),
@@ -363,9 +338,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
                 return InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    bool val = await Get.toNamed('/task-detail',
+                        arguments: tasks[index]);
+                    if (val) {
+                      getTask();
+                    }
                     // Get.changeTheme(ThemeData.light(useMaterial3: true));
-                    themeProvider.updateTheme(1);
+                    // themeProvider.updateTheme(1);
                     // myController.toggleTheme();
                   },
                   child: Card(
@@ -463,7 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 1) {
             Get.toNamed('/catogories');
           }
-          logger.i(value);
+          // logger.i(value);
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
