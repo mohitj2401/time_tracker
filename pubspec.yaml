@@ -48,6 +48,8 @@ dependencies:
   logger: ^2.0.2
   responsive_sizer: ^3.2.0
   duration_picker: ^1.1.1
+  stop_watch_timer: ^3.0.2
+  duration: ^3.0.12
 
 dev_dependencies:
   flutter_test:

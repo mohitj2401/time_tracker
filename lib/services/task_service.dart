@@ -22,14 +22,14 @@ class TaskService {
     });
   }
 
-  Future<int> updateTask(Category category) async {
+  Future<int> updateTask(Tasks tasks) async {
     Database database = await DatabaseHelper().database;
 
     return await database.update(
       tableName,
-      category.toMap(),
+      tasks.toMap(),
       where: 'id = ?',
-      whereArgs: [category.id],
+      whereArgs: [tasks.id],
     );
   }
 

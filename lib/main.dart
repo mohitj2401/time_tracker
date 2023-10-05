@@ -1,21 +1,22 @@
-/*
-  Authors : initappz (Rahul Jograna)
-  Website : https://initappz.com/
-  App Name : Foodies Full App Flutter
-  This App Template Source code is licensed as per the
-  terms found in the Website https://initappz.com/license
-  Copyright and Good Faith Purchasers © 2022-present initappz.
-*/
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/router.dart';
+import 'package:time_tracker/providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // DatabaseHelper databaseHelper = DatabaseHelper();
-  // databaseHelper;
-  runApp(const MyApp());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (BuildContext context) => new ThemeProviders()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,8 +28,8 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return GetMaterialApp(
-          theme: ThemeData.dark(useMaterial3: true),
-          title: 'Your Time Tracker',
+          theme: Provider.of<ThemeProviders>(context).themeData,
+          title: 'Time Tracker',
           // color: ThemeProvider.appColor,
           debugShowCheckedModeBanner: false,
           navigatorKey: Get.key,

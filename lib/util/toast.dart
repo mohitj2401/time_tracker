@@ -40,42 +40,6 @@ void successToast(String message) {
   ));
 }
 
-Future<bool> clearCartAlert() async {
-  HapticFeedback.lightImpact();
-  bool clean = false;
-  await Get.generalDialog(
-      pageBuilder: (context, __, ___) => AlertDialog(
-            title: const Text('Warning'),
-            content: const Text(
-                "You already have item's in cart with different grocery store"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  clean = false;
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                      color: ThemeProvider.blackColor, fontFamily: 'medium'),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  clean = true;
-                },
-                child: const Text(
-                  'Clear Cart',
-                  style: TextStyle(
-                      color: ThemeProvider.appColor, fontFamily: 'bold'),
-                ),
-              )
-            ],
-          ));
-  return clean;
-}
-
 Future<bool> notificationDialog(String title, String message) async {
   HapticFeedback.lightImpact();
   bool clean = false;
@@ -92,7 +56,7 @@ Future<bool> notificationDialog(String title, String message) async {
                 child: const Text(
                   'Cancel',
                   style: TextStyle(
-                      color: ThemeProvider.blackColor, fontFamily: 'medium'),
+                      color: ThemeProvider.greyColor, fontFamily: 'medium'),
                 ),
               ),
               TextButton(
