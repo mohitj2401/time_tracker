@@ -11,7 +11,7 @@ class ThemeProviders extends ChangeNotifier {
   int get theme_number => _theme_number;
 
   updateTheme(int themeNumber) {
-    _theme_number = _theme_number == 1 ? 0 : 1;
+    _theme_number = themeNumber;
     notifyListeners();
   }
 }

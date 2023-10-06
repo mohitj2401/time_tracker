@@ -40,4 +40,9 @@ class Category {
 
   factory Category.fromJson(String source) =>
       Category.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() {
+    return 'Category(id: $id, name: $name, created_at: $created_at, updated_at: $updated_at)';
+  }
 }

@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/models/tasks.dart';
 import 'package:time_tracker/services/task_service.dart';
+import 'package:time_tracker/util/toast.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({
@@ -23,6 +24,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Tasks arguments = Get.arguments;
   Logger log = Logger();
   TextEditingController name = TextEditingController();
+  TaskService service = TaskService();
 
   late Tasks task;
   @override
@@ -51,6 +53,25 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           "Task Detail",
           // style: ThemeProvider.titleStyle,
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              bool val = await notificationDialog(
+                  "Warning", "You already have time stored for this task.");
+              // print(val);
+              if (val) {
+                service.deleteTask(task.id!);
+                Get.back(result: true);
+                setState(() {});
+              }
+            },
+            icon: Icon(Icons.delete),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.edit),
+          ),
+        ],
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -67,28 +88,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          child: Text(
-                            task.name,
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                          onPressed: () {
-                            isEdit = true;
-                          },
-                          icon: Icon(
-                            Icons.edit,
-                            size: 20,
-                          ),
-                        )
-                      ],
+                    Container(
+                      width: 30.w,
+                      child: Text(
+                        task.name,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
                     ),
                     Container(
                       child: Text(

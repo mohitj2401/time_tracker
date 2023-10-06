@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController description = TextEditingController();
   final ThemeController myController = Get.put(ThemeController());
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
-
+  late SharedPreferences pref;
   // int selectedTask = 0;
   // List<Category> catogories = [];
   List<DropdownMenuItem> items = [];
@@ -81,7 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   timerExist() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref = await SharedPreferences.getInstance();
+
     bool? val = pref.getBool('TIMER_EXIST');
     if (val != null && val) {
       String? DTval = pref.getString('DT');
@@ -99,9 +100,16 @@ class _HomeScreenState extends State<HomeScreen> {
       if (timerId != null && timerId > 1) {
         selectedTimer = timerId;
         _stopWatchTimer.setPresetSecondTime(compareResult.inSeconds);
+
         _stopWatchTimer.onStartTimer();
         setState(() {});
       }
+    }
+
+    int? themeNumber = pref.getInt('THEME');
+    if (themeNumber != null) {
+      context.read<ThemeProviders>().updateTheme(themeNumber);
+      // themeProvider.updateTheme(themeNumber);
     }
   }
 
@@ -247,7 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             onPressed: () {
-              themeProvider.updateTheme(1);
+              int nu = themeProvider.theme_number;
+              pref.setInt('THEME', nu == 1 ? 0 : 1);
+
+              themeProvider.updateTheme(nu == 1 ? 0 : 1);
             },
             icon: themeProvider.theme_number == 0
                 ? Icon(Icons.light_mode_outlined)
@@ -267,166 +278,182 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Card(
                     elevation: 2,
                     child: Container(
+                      width: 90.w,
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              children: [
-                                Text((index + 1).toString()),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(tasks[index].name),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                          StreamBuilder<int>(
-                            stream: _stopWatchTimer.rawTime,
-                            initialData: 0,
-                            builder: (context, snap) {
-                              // print(snap.data);
-                              final value = snap.data;
-                              selectedTimerTime = value!;
-                              final displayTime = StopWatchTimer.getDisplayTime(
-                                  value,
-                                  milliSecond: false);
-                              return Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Text(
-                                      displayTime,
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'Helvetica',
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                          Expanded(
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Row(
+                                children: [
+                                  Text((index + 1).toString()),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(child: Text(tasks[index].name)),
+                                  const SizedBox(
+                                    width: 10,
                                   ),
                                 ],
-                              );
-                            },
+                              ),
+                            ),
                           ),
-                          IconButton(
-                            onPressed: () async {
-                              _stopWatchTimer.onStopTimer();
+                          Expanded(
+                            child: StreamBuilder<int>(
+                              stream: _stopWatchTimer.rawTime,
+                              initialData: 0,
+                              builder: (context, snap) {
+                                // print(snap.data);
+                                final value = snap.data;
+                                selectedTimerTime = value!;
+                                final displayTime =
+                                    StopWatchTimer.getDisplayTime(value,
+                                        milliSecond: false);
+                                return Column(
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Text(
+                                        displayTime,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'Helvetica',
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: IconButton(
+                              onPressed: () async {
+                                _stopWatchTimer.onStopTimer();
 
-                              selectedTimer = 0;
-                              String time =
-                                  Duration(milliseconds: selectedTimerTime)
-                                      .toString()
-                                      .split('.')[0];
-                              tasks[index].time = time;
-                              taskService.updateTask(tasks[index]);
-                              selectedTimerTime = 0;
-                              _stopWatchTimer.onResetTimer();
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
-                              pref.setBool('TIMER_EXIST', false);
-                              setState(() {});
-                            },
-                            icon: const Icon(Icons.pause_circle),
+                                selectedTimer = 0;
+                                String time =
+                                    Duration(milliseconds: selectedTimerTime)
+                                        .toString()
+                                        .split('.')[0];
+                                tasks[index].time = time;
+                                taskService.updateTask(tasks[index]);
+                                selectedTimerTime = 0;
+                                _stopWatchTimer.onResetTimer();
+                                SharedPreferences pref =
+                                    await SharedPreferences.getInstance();
+                                pref.setBool('TIMER_EXIST', false);
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.pause_circle),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   );
                 }
-                return InkWell(
-                  onTap: () async {
-                    bool val = await Get.toNamed('/task-detail',
-                        arguments: tasks[index]);
-                    if (val) {
-                      getTask();
-                    }
-                    // Get.changeTheme(ThemeData.light(useMaterial3: true));
-                    // themeProvider.updateTheme(1);
-                    // myController.toggleTheme();
-                  },
-                  child: Card(
-                    elevation: 2,
+                return Card(
+                  elevation: 2,
+                  child: InkWell(
+                    onTap: () async {
+                      bool val = await Get.toNamed('/task-detail',
+                          arguments: tasks[index]);
+                      if (val) {
+                        getTask();
+                      }
+                      // Get.changeTheme(ThemeData.light(useMaterial3: true));
+                      // themeProvider.updateTheme(1);
+                      // myController.toggleTheme();
+                    },
                     child: Container(
+                      width: 90.w,
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                          Expanded(
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Row(
+                                children: [
+                                  Text((index + 1).toString()),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(child: Text(tasks[index].name)),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Text(tasks[index].time)),
+                          Expanded(
                             child: Row(
                               children: [
-                                Text((index + 1).toString()),
-                                const SizedBox(
-                                  width: 10,
+                                IconButton(
+                                  onPressed: () async {
+                                    // print(tasks[index].time);
+                                    int val =
+                                        parseTime("${tasks[index].time}.0000")
+                                            .inSeconds;
+                                    // print(val);
+                                    // _stopWatchTimer.onResetTimer();
+                                    _stopWatchTimer.setPresetSecondTime(val,
+                                        add: false);
+                                    _stopWatchTimer.onStartTimer();
+                                    selectedTimer = tasks[index].id!;
+                                    selectedTimerTime = 0;
+                                    SharedPreferences pref =
+                                        await SharedPreferences.getInstance();
+                                    pref.setBool('TIMER_EXIST', true);
+                                    pref.setString(
+                                        'DT', DateTime.now().toString());
+                                    pref.setInt('TIMER_ID', selectedTimer);
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(Icons.play_circle),
                                 ),
-                                Text(tasks[index].name),
-                                const SizedBox(
-                                  width: 10,
+                                // IconButton(
+                                //   onPressed: () async {
+                                //     // print(tasks[index].time);
+                                //     bool val = await notificationDialog("Warning",
+                                //         "You already have time stored for this task.");
+                                //     // print(val);
+                                //     if (val) {
+                                //       taskService.deleteTask(tasks[index].id!);
+                                //       tasks.removeWhere((element) =>
+                                //           element.id == tasks[index].id);
+                                //       setState(() {});
+                                //     }
+                                //   },
+                                //   icon: const Icon(Icons.delete),
+                                // ),
+
+                                IconButton(
+                                  onPressed: () async {
+                                    // print(tasks[index].time);
+                                    bool val = await notificationDialog(
+                                        "Warning",
+                                        "You already have time stored for this task.");
+                                    // print(val);
+                                    if (val) {
+                                      tasks[index].time = '00:00:00';
+                                      taskService.updateTask(tasks[index]);
+
+                                      setState(() {});
+                                    }
+                                  },
+                                  icon: const Icon(Icons.restore),
                                 ),
                               ],
                             ),
-                          ),
-                          Text(tasks[index].time),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () async {
-                                  // print(tasks[index].time);
-                                  int val =
-                                      parseTime("${tasks[index].time}.0000")
-                                          .inSeconds;
-                                  // print(val);
-                                  // _stopWatchTimer.onResetTimer();
-                                  _stopWatchTimer.setPresetSecondTime(val,
-                                      add: false);
-                                  _stopWatchTimer.onStartTimer();
-                                  selectedTimer = tasks[index].id!;
-                                  selectedTimerTime = 0;
-                                  SharedPreferences pref =
-                                      await SharedPreferences.getInstance();
-                                  pref.setBool('TIMER_EXIST', true);
-                                  pref.setString(
-                                      'DT', DateTime.now().toString());
-                                  pref.setInt('TIMER_ID', selectedTimer);
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.play_circle),
-                              ),
-                              IconButton(
-                                onPressed: () async {
-                                  // print(tasks[index].time);
-                                  bool val = await notificationDialog("Warning",
-                                      "You already have time stored for this task.");
-                                  // print(val);
-                                  if (val) {
-                                    taskService.deleteTask(tasks[index].id!);
-                                    tasks.removeWhere((element) =>
-                                        element.id == tasks[index].id);
-                                    setState(() {});
-                                  }
-                                },
-                                icon: const Icon(Icons.delete),
-                              ),
-                              IconButton(
-                                onPressed: () async {
-                                  // print(tasks[index].time);
-                                  bool val = await notificationDialog("Warning",
-                                      "You already have time stored for this task.");
-                                  // print(val);
-                                  if (val) {
-                                    tasks[index].time = '00:00:00';
-                                    taskService.updateTask(tasks[index]);
-
-                                    setState(() {});
-                                  }
-                                },
-                                icon: const Icon(Icons.restore),
-                              ),
-                            ],
                           ),
                         ],
                       ),

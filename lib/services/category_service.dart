@@ -18,14 +18,11 @@ class CategoryService {
         await database.query(tableName, orderBy: 'created_at DESC');
     // print(maps);
     return List.generate(maps.length, (i) {
-      return Category(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-      );
+      return Category.fromMap(maps[i]);
     });
   }
 
-  Future<int> updateTask(Category category) async {
+  Future<int> updateCategory(Category category) async {
     Database database = await DatabaseHelper().database;
 
     return await database.update(

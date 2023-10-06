@@ -15,10 +15,12 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
+  bool isEdit = false;
   List<Category> categories = [];
   DatabaseHelper databaseHelper = DatabaseHelper();
   CategoryService service = CategoryService();
   List<DropdownMenuItem> items = [];
+  int selectedCategory = -1;
   // String selectedType = 'select';
   TextEditingController categoryText = TextEditingController();
   saveCategory(String value) {
@@ -27,6 +29,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       created_at: DateTime.now(),
       updated_at: DateTime.now(),
     );
+
     int index = categories.indexWhere((element) => element.name == value);
     if (index == -1) {
       service.insertTask(category);
@@ -83,8 +86,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              child: const Text(
-                "Add New Category",
+              child: Text(
+                isEdit ? "Edit Category" : "Add New Category",
                 style: TextStyle(fontSize: 18),
               ),
             ),
@@ -107,16 +110,52 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             const SizedBox(
               height: 10,
             ),
-            ElevatedButton(
-              onPressed: () {
-                // print(categoryText.text);
-                if (categoryText.text.isNotEmpty) {
-                  saveCategory(categoryText.text);
-                } else {
-                  showToast('Please Enter Category Name');
-                }
-              },
-              child: const Text('Add'),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (isEdit) {
+                      if (categoryText.text.isNotEmpty &&
+                          categoryText.text != '' &&
+                          !categoryText.text.isBlank! &&
+                          selectedCategory > -1) {
+                        categories[selectedCategory].name = categoryText.text;
+                        service.updateCategory(categories[selectedCategory]);
+                        categoryText.text = '';
+                        isEdit = false;
+                        print(categories[selectedCategory].toString());
+                        setState(() {});
+                      } else {
+                        showToast('Category Name Cannot be Empty');
+                      }
+                    } else {
+                      // print(categoryText.text);
+                      if (categoryText.text.isNotEmpty &&
+                          categoryText.text != '' &&
+                          !categoryText.text.isBlank!) {
+                        saveCategory(categoryText.text);
+                      } else {
+                        showToast('Please Enter Category Name');
+                      }
+                    }
+                  },
+                  child: isEdit ? const Text("Edit") : const Text('Add'),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                if (isEdit)
+                  ElevatedButton(
+                    onPressed: () {
+                      // print(categoryText.text);
+                      setState(() {
+                        isEdit = false;
+                        categoryText.text = '';
+                      });
+                    },
+                    child: isEdit ? const Text("Back") : const Text('Add'),
+                  ),
+              ],
             ),
             const SizedBox(
               height: 10,
@@ -153,6 +192,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           children: [
                             IconButton(
                               onPressed: () {
+                                isEdit = true;
+                                selectedCategory = index;
+                                categoryText.text = categories[index].name!;
+                                setState(() {});
                                 // deleteCategory(categories[index].id!);
                               },
                               icon: const Icon(Icons.edit),

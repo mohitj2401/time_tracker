@@ -51,7 +51,7 @@ Future<bool> notificationDialog(String title, String message) async {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  clean = true;
+                  clean = false;
                 },
                 child: const Text(
                   'Cancel',
