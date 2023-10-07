@@ -23,6 +23,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   int selectedCategory = -1;
   // String selectedType = 'select';
   TextEditingController categoryText = TextEditingController();
+
+  ScrollController controller = ScrollController();
+
   saveCategory(String value) {
     Category category = Category(
       name: value,
@@ -172,6 +175,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             Expanded(
               // width: 100.w,
               child: ListView.builder(
+                controller: controller,
                 itemBuilder: (context, index) {
                   return Card(
                     elevation: 2,
@@ -231,6 +235,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               icon: Icon(Icons.category), label: 'Category'),
           BottomNavigationBarItem(icon: Icon(Icons.analytics), label: 'Report'),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        tooltip: 'Move to End',
+        onPressed: () {
+          controller.animateTo(99999,
+              duration: Duration(milliseconds: 100), curve: Curves.linear);
+        },
+        child: Icon(
+          Icons.keyboard_arrow_down,
+          // size: 50,
+        ),
       ),
     );
   }

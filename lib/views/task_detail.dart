@@ -1,6 +1,5 @@
 import 'package:duration/duration.dart';
 import 'package:duration_picker/duration_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
