@@ -282,8 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 100.h,
         width: 100.w,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: SizedBox(
-          height: 90.h,
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -305,8 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? null
                                 : Theme.of(context)
                                     .colorScheme
-                                    .tertiary
-                                    .withOpacity(0.1),
+                                    .secondary
+                                    .withOpacity(0.4),
                             border: isTodayTask
                                 ? null
                                 : Border.all(
@@ -335,8 +334,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? null
                                 : Theme.of(context)
                                     .colorScheme
-                                    .tertiary
-                                    .withOpacity(0.1),
+                                    .secondary
+                                    .withOpacity(0.4),
                             borderRadius: BorderRadius.circular(15),
                             border: !isTodayTask
                                 ? null
@@ -483,7 +482,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              Expanded(child: Text(tasks[index].time)),
+                              Expanded(
+                                child: Text(tasks[index].time),
+                              ),
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,

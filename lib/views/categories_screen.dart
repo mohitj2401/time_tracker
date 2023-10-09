@@ -177,42 +177,47 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               child: ListView.builder(
                 controller: controller,
                 itemBuilder: (context, index) {
-                  return Card(
-                    elevation: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Text((index + 1).toString()),
-                            ),
-                            Text(categories[index].name!),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                isEdit = true;
-                                selectedCategory = index;
-                                categoryText.text = categories[index].name!;
-                                setState(() {});
-                                // deleteCategory(categories[index].id!);
-                              },
-                              icon: const Icon(Icons.edit),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                deleteCategory(categories[index].id!);
-                              },
-                              icon: const Icon(Icons.delete),
-                            ),
-                          ],
-                        )
-                      ],
+                  return Container(
+                    padding: (index + 1) == categories.length
+                        ? EdgeInsets.only(bottom: 25)
+                        : null,
+                    child: Card(
+                      elevation: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Text((index + 1).toString()),
+                              ),
+                              Text(categories[index].name!),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  isEdit = true;
+                                  selectedCategory = index;
+                                  categoryText.text = categories[index].name!;
+                                  setState(() {});
+                                  // deleteCategory(categories[index].id!);
+                                },
+                                icon: const Icon(Icons.edit),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  deleteCategory(categories[index].id!);
+                                },
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },
