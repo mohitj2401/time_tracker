@@ -100,7 +100,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             Container(
               child: TextFormField(
                 controller: categoryText,
-                cursorColor: ThemeProvider.whiteColor,
                 style: const TextStyle(fontSize: 16),
                 decoration: const InputDecoration(
                   // contentPadding: EdgeInsets.zero,

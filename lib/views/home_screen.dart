@@ -12,6 +12,7 @@ import 'package:time_tracker/models/tasks.dart';
 import 'package:time_tracker/providers/theme_provider.dart';
 import 'package:time_tracker/services/category_service.dart';
 import 'package:time_tracker/services/task_service.dart';
+import 'package:time_tracker/util/constant.dart';
 import 'package:time_tracker/util/theme.dart';
 import 'package:time_tracker/util/toast.dart';
 
@@ -51,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text("Select Task Catgeory"),
     ));
     service.getAllCategory().then((value) {
+      AppConstants.categories = value;
       for (var element in value) {
         items.add(DropdownMenuItem(
           value: element.id,
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   saveTask() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    logger.i(formattedDate);
     Tasks task = Tasks(
       category_id: selectedItem,
       date: formattedDate,
@@ -204,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Container(
                                 child: TextFormField(
                                   controller: name,
-                                  cursorColor: ThemeProvider.whiteColor,
+                                  // cursorColor: ThemeProvider.whiteColor,
                                   style: const TextStyle(fontSize: 16),
                                   decoration: const InputDecoration(
                                     // contentPadding: EdgeInsets.zero,
@@ -236,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   minLines: 3,
                                   maxLines: 5,
                                   controller: description,
-                                  cursorColor: ThemeProvider.whiteColor,
+                                  // cursorColor: ThemeProvider.whiteColor,
                                   style: const TextStyle(fontSize: 16),
                                   decoration: const InputDecoration(
                                     // contentPadding: EdgeInsets.zero,
@@ -428,6 +431,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             milliseconds: selectedTimerTime)
                                         .toString()
                                         .split('.')[0];
+                                    String hr = time.split(':')[0];
+                                    String min = time.split(':')[1];
+                                    String sec = time.split(':')[2];
+                                    if (hr.length < 2) {
+                                      time = '0' + hr + ':' + min + ":" + sec;
+                                    }
                                     tasks[index].time = time;
                                     taskService.updateTask(tasks[index]);
                                     selectedTimerTime = 0;
@@ -435,6 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     SharedPreferences pref =
                                         await SharedPreferences.getInstance();
                                     pref.setBool('TIMER_EXIST', false);
+                                    logger.i(time);
                                     setState(() {});
                                   },
                                   icon: const Icon(Icons.pause_circle),
@@ -449,11 +459,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       elevation: 2,
                       child: InkWell(
                         onTap: () async {
-                          bool val = await Get.toNamed('/task-detail',
+                          await Get.toNamed('/task-detail',
                               arguments: tasks[index]);
-                          if (val) {
-                            getTask();
-                          }
+
+                          getTask();
+
                           // Get.changeTheme(ThemeData.light(useMaterial3: true));
                           // themeProvider.updateTheme(1);
                           // myController.toggleTheme();
@@ -572,6 +582,9 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (int value) {
           if (value == 1) {
             Get.toNamed('/catogories');
+          }
+          if (value == 2) {
+            Get.toNamed('/report');
           }
           // logger.i(value);
         },

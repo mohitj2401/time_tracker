@@ -181,7 +181,14 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         Duration? duration = await showDurationPicker(
                             context: context, initialTime: inital);
                         if (duration != null) {
-                          time.text = duration.toString().split('.')[0];
+                          String time_cal = duration.toString().split('.')[0];
+                          String hr = time_cal.split(':')[0];
+                          String min = time_cal.split(':')[1];
+                          String sec = time_cal.split(':')[2];
+                          if (hr.length < 2) {
+                            time_cal = '0' + hr + ':' + min + ":" + sec;
+                          }
+                          time.text = time_cal;
                           // TaskService service = TaskService();
                           // service.updateTask(task);
                         }
@@ -265,7 +272,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           Duration? duration = await showDurationPicker(
                               context: context, initialTime: inital);
                           if (duration != null) {
-                            task.time = duration.toString().split('.')[0];
+                            String time_cal = duration.toString().split('.')[0];
+                            String hr = time_cal.split(':')[0];
+                            String min = time_cal.split(':')[1];
+                            String sec = time_cal.split(':')[2];
+                            if (hr.length < 2) {
+                              time_cal = '0' + hr + ':' + min + ":" + sec;
+                            }
+                            // time.text = time_cal;
+                            task.time = time_cal;
                             TaskService service = TaskService();
                             service.updateTask(task);
                           }

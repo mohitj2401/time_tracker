@@ -1,3 +1,5 @@
+import 'package:time_tracker/models/category.dart';
+
 class AppConstants {
   // static const String appName = Environments.appName;
   static List<String> catagoryType = [
@@ -9,4 +11,6 @@ class AppConstants {
     'Other',
     'Learn',
   ];
+
+  static List<Category> categories = [];
 }
