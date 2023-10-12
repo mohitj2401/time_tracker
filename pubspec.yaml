@@ -69,9 +69,11 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/Screenshot_2023-10-09_185034-removebg-preview (2).png"
+  image_path: "assets/Screenshot 2023-10-11 131322 (1).png"
   min_sdk_android: 21
-  remove_alpha_ios: true
+  adaptive_icon_foreground: "assets/Screenshot 2023-10-11 131322 (1).png"
+  adaptive_icon_background: "#ffffff"
+  # remove_alpha_ios: true
   # android min sdk min:16, default 21
   # web:
   #   generate: true

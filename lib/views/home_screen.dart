@@ -8,6 +8,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:time_tracker/controllers/theme_controller.dart';
+import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/models/tasks.dart';
 import 'package:time_tracker/providers/theme_provider.dart';
 import 'package:time_tracker/services/category_service.dart';
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ThemeController myController = Get.put(ThemeController());
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
   late SharedPreferences pref;
+  List<Category> categories = [];
   ScrollController controller = ScrollController();
   // int selectedTask = 0;
   // List<Category> catogories = [];
@@ -51,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
       value: 0,
       child: Text("Select Task Catgeory"),
     ));
+
     service.getAllCategory().then((value) {
+      categories = value;
       AppConstants.categories = value;
       for (var element in value) {
         items.add(DropdownMenuItem(
@@ -285,298 +289,330 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 100.h,
         width: 100.w,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 10.h,
-                child: Row(
+        child: categories.isEmpty
+            ? Center(
+                child: Container(
+                child: Text(
+                  "Please add Category first.",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ))
+            : SingleChildScrollView(
+                child: Column(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        isTodayTask = false;
-                        getTask();
-                        setState(() {});
-                      },
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: isTodayTask
-                                ? null
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withOpacity(0.4),
-                            border: isTodayTask
-                                ? null
-                                : Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
+                    Container(
+                      height: 10.h,
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              isTodayTask = false;
+                              getTask();
+                              setState(() {});
+                            },
+                            child: Card(
+                              elevation: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: isTodayTask
+                                      ? null
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                          .withOpacity(0.4),
+                                  border: isTodayTask
+                                      ? null
+                                      : Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                child: Text(
+                                    "All (${!isTodayTask ? tasks.length : ''})"),
+                              ),
+                            ),
                           ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child:
-                              Text("All (${!isTodayTask ? tasks.length : ''})"),
-                        ),
+                          InkWell(
+                            onTap: () {
+                              isTodayTask = true;
+                              getTask();
+                              setState(() {});
+                            },
+                            child: Card(
+                              elevation: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: !isTodayTask
+                                      ? null
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .secondary
+                                          .withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: !isTodayTask
+                                      ? null
+                                      : Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                child: Text(
+                                    "Today Tasks (${isTodayTask ? tasks.length : ''})"),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        isTodayTask = true;
-                        getTask();
-                        setState(() {});
-                      },
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: !isTodayTask
-                                ? null
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(15),
-                            border: !isTodayTask
-                                ? null
-                                : Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: Text(
-                              "Today Tasks (${isTodayTask ? tasks.length : ''})"),
-                        ),
+                    SizedBox(
+                      height: 70.h,
+                      width: 90.w,
+                      child: ListView.builder(
+                        controller: controller,
+                        // primary: true,
+                        shrinkWrap: true,
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          if (selectedTimer == tasks[index].id) {
+                            return Card(
+                              elevation: 2,
+                              child: Container(
+                                width: 90.w,
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Expanded(
+                                            child: Text(tasks[index].name)),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: StreamBuilder<int>(
+                                        stream: _stopWatchTimer.rawTime,
+                                        initialData: 0,
+                                        builder: (context, snap) {
+                                          // print(snap.data);
+                                          final value = snap.data;
+                                          selectedTimerTime = value!;
+                                          final displayTime =
+                                              StopWatchTimer.getDisplayTime(
+                                                  value,
+                                                  milliSecond: false);
+                                          return Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: Text(
+                                                  displayTime,
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontFamily: 'Helvetica',
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          _stopWatchTimer.onStopTimer();
+
+                                          selectedTimer = 0;
+                                          String time = Duration(
+                                                  milliseconds:
+                                                      selectedTimerTime)
+                                              .toString()
+                                              .split('.')[0];
+                                          String hr = time.split(':')[0];
+                                          String min = time.split(':')[1];
+                                          String sec = time.split(':')[2];
+                                          if (hr.length < 2) {
+                                            time = '0' +
+                                                hr +
+                                                ':' +
+                                                min +
+                                                ":" +
+                                                sec;
+                                          }
+                                          tasks[index].time = time;
+                                          taskService.updateTask(tasks[index]);
+                                          selectedTimerTime = 0;
+                                          _stopWatchTimer.onResetTimer();
+                                          SharedPreferences pref =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          pref.setBool('TIMER_EXIST', false);
+                                          logger.i(time);
+                                          setState(() {});
+                                        },
+                                        icon: const Icon(Icons.pause_circle),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                          return Card(
+                            elevation: 2,
+                            child: InkWell(
+                              onTap: () async {
+                                await Get.toNamed('/task-detail',
+                                    arguments: tasks[index]);
+
+                                getTask();
+
+                                // Get.changeTheme(ThemeData.light(useMaterial3: true));
+                                // themeProvider.updateTheme(1);
+                                // myController.toggleTheme();
+                              },
+                              child: Container(
+                                width: 90.w,
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        // padding: const EdgeInsets.symmetric(
+                                        //     horizontal: 10),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              tasks[index].name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                            ),
+                                            Text(
+                                              AppConstants.categories
+                                                  .firstWhere((element) =>
+                                                      element.id ==
+                                                      tasks[index].category_id)
+                                                  .name!,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(tasks[index].time),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          if (isTodayTask)
+                                            IconButton(
+                                              onPressed: () async {
+                                                // print(tasks[index].time);
+                                                int val = parseTime(
+                                                        "${tasks[index].time}.0000")
+                                                    .inSeconds;
+                                                // print(val);
+                                                // _stopWatchTimer.onResetTimer();
+                                                _stopWatchTimer
+                                                    .setPresetSecondTime(val,
+                                                        add: false);
+                                                _stopWatchTimer.onStartTimer();
+                                                selectedTimer =
+                                                    tasks[index].id!;
+                                                selectedTimerTime = 0;
+                                                SharedPreferences pref =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                pref.setBool(
+                                                    'TIMER_EXIST', true);
+                                                pref.setString('DT',
+                                                    DateTime.now().toString());
+                                                pref.setInt(
+                                                    'TIMER_ID', selectedTimer);
+                                                setState(() {});
+                                              },
+                                              icon:
+                                                  const Icon(Icons.play_circle),
+                                            ),
+                                          if (!isTodayTask)
+                                            IconButton(
+                                              alignment: Alignment.centerRight,
+                                              onPressed: () async {
+                                                // print(tasks[index].time);
+                                                bool val = await notificationDialog(
+                                                    "Warning",
+                                                    "You already have time stored for this task.");
+                                                // print(val);
+                                                if (val) {
+                                                  taskService.deleteTask(
+                                                      tasks[index].id!);
+                                                  tasks.removeWhere((element) =>
+                                                      element.id ==
+                                                      tasks[index].id);
+                                                  setState(() {});
+                                                }
+                                              },
+                                              icon: const Icon(Icons.delete),
+                                            ),
+                                          if (isTodayTask)
+                                            IconButton(
+                                              onPressed: () async {
+                                                // print(tasks[index].time);
+                                                bool val = await notificationDialog(
+                                                    "Warning",
+                                                    "You already have time stored for this task.");
+                                                // print(val);
+                                                if (val) {
+                                                  tasks[index].time =
+                                                      '00:00:00';
+                                                  taskService
+                                                      .updateTask(tasks[index]);
+
+                                                  setState(() {});
+                                                }
+                                              },
+                                              icon: const Icon(Icons.restore),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     )
                   ],
                 ),
               ),
-              SizedBox(
-                height: 70.h,
-                width: 90.w,
-                child: ListView.builder(
-                  controller: controller,
-                  // primary: true,
-                  shrinkWrap: true,
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    if (selectedTimer == tasks[index].id) {
-                      return Card(
-                        elevation: 2,
-                        child: Container(
-                          width: 90.w,
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Row(
-                                    children: [
-                                      Text((index + 1).toString()),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(child: Text(tasks[index].name)),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: StreamBuilder<int>(
-                                  stream: _stopWatchTimer.rawTime,
-                                  initialData: 0,
-                                  builder: (context, snap) {
-                                    // print(snap.data);
-                                    final value = snap.data;
-                                    selectedTimerTime = value!;
-                                    final displayTime =
-                                        StopWatchTimer.getDisplayTime(value,
-                                            milliSecond: false);
-                                    return Column(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            displayTime,
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontFamily: 'Helvetica',
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-                              Expanded(
-                                child: IconButton(
-                                  onPressed: () async {
-                                    _stopWatchTimer.onStopTimer();
-
-                                    selectedTimer = 0;
-                                    String time = Duration(
-                                            milliseconds: selectedTimerTime)
-                                        .toString()
-                                        .split('.')[0];
-                                    String hr = time.split(':')[0];
-                                    String min = time.split(':')[1];
-                                    String sec = time.split(':')[2];
-                                    if (hr.length < 2) {
-                                      time = '0' + hr + ':' + min + ":" + sec;
-                                    }
-                                    tasks[index].time = time;
-                                    taskService.updateTask(tasks[index]);
-                                    selectedTimerTime = 0;
-                                    _stopWatchTimer.onResetTimer();
-                                    SharedPreferences pref =
-                                        await SharedPreferences.getInstance();
-                                    pref.setBool('TIMER_EXIST', false);
-                                    logger.i(time);
-                                    setState(() {});
-                                  },
-                                  icon: const Icon(Icons.pause_circle),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    return Card(
-                      elevation: 2,
-                      child: InkWell(
-                        onTap: () async {
-                          await Get.toNamed('/task-detail',
-                              arguments: tasks[index]);
-
-                          getTask();
-
-                          // Get.changeTheme(ThemeData.light(useMaterial3: true));
-                          // themeProvider.updateTheme(1);
-                          // myController.toggleTheme();
-                        },
-                        child: Container(
-                          width: 90.w,
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Row(
-                                    children: [
-                                      Text((index + 1).toString()),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(child: Text(tasks[index].name)),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(tasks[index].time),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (isTodayTask)
-                                      IconButton(
-                                        onPressed: () async {
-                                          // print(tasks[index].time);
-                                          int val = parseTime(
-                                                  "${tasks[index].time}.0000")
-                                              .inSeconds;
-                                          // print(val);
-                                          // _stopWatchTimer.onResetTimer();
-                                          _stopWatchTimer.setPresetSecondTime(
-                                              val,
-                                              add: false);
-                                          _stopWatchTimer.onStartTimer();
-                                          selectedTimer = tasks[index].id!;
-                                          selectedTimerTime = 0;
-                                          SharedPreferences pref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          pref.setBool('TIMER_EXIST', true);
-                                          pref.setString(
-                                              'DT', DateTime.now().toString());
-                                          pref.setInt(
-                                              'TIMER_ID', selectedTimer);
-                                          setState(() {});
-                                        },
-                                        icon: const Icon(Icons.play_circle),
-                                      ),
-                                    if (!isTodayTask)
-                                      IconButton(
-                                        alignment: Alignment.centerRight,
-                                        onPressed: () async {
-                                          // print(tasks[index].time);
-                                          bool val = await notificationDialog(
-                                              "Warning",
-                                              "You already have time stored for this task.");
-                                          // print(val);
-                                          if (val) {
-                                            taskService
-                                                .deleteTask(tasks[index].id!);
-                                            tasks.removeWhere((element) =>
-                                                element.id == tasks[index].id);
-                                            setState(() {});
-                                          }
-                                        },
-                                        icon: const Icon(Icons.delete),
-                                      ),
-                                    if (isTodayTask)
-                                      IconButton(
-                                        onPressed: () async {
-                                          // print(tasks[index].time);
-                                          bool val = await notificationDialog(
-                                              "Warning",
-                                              "You already have time stored for this task.");
-                                          // print(val);
-                                          if (val) {
-                                            tasks[index].time = '00:00:00';
-                                            taskService
-                                                .updateTask(tasks[index]);
-
-                                            setState(() {});
-                                          }
-                                        },
-                                        icon: const Icon(Icons.restore),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (int value) {

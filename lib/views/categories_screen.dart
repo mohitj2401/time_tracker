@@ -190,9 +190,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 20),
-                                child: Text((index + 1).toString()),
                               ),
-                              Text(categories[index].name!),
+                              Text(
+                                categories[index].name!,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
                             ],
                           ),
                           Row(
@@ -231,6 +233,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         onTap: (int value) {
           if (value == 0) {
             Get.toNamed('/');
+          }
+          if (value == 2) {
+            Get.toNamed('/report');
           }
         },
         items: const [

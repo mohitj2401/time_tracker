@@ -18,14 +18,32 @@ class _ReportScreenState extends State<ReportScreen> {
   ReportService reportScreen = ReportService();
   List<DataModel> datasets = [];
   List<List<DataModel>> datas = [];
+  List<ChartSeries> chartSeries = [];
   Logger log = Logger();
   bool isLoading = true;
   getData() async {
     datasets = await reportScreen.getMonthlyReport();
-    datas = await reportScreen.getWeeklyReport();
-    isLoading = false;
+    reportScreen.getWeeklyReport().then((value) {
+      value.forEach((element) {
+        chartSeries.add(
+          StackedColumnSeries<DataModel, String>(
+            name: element[0].z,
+            // dataLabelSettings: const DataLabelSettings(
+            //   isVisible: true,
+            //   textStyle: TextStyle(fontSize: 14, color: Colors.black),
+            // ),
+            dataLabelMapper: (DataModel data, _) => 'Minutes ${data.z}'!,
+            dataSource: element,
+            xValueMapper: (DataModel data, _) => data.x.substring(0, 2),
+            yValueMapper: (DataModel data, _) => data.y,
+          ),
+        );
+      });
 
-    setState(() {});
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
 
   @override
@@ -39,6 +57,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Report'),
       ),
       body: Container(
@@ -76,76 +95,20 @@ class _ReportScreenState extends State<ReportScreen> {
                     height: 40.h,
                     width: 100.w,
                     child: SfCartesianChart(
-                      tooltipBehavior: TooltipBehavior(
+                      enableSideBySideSeriesPlacement: true,
+
+                      title: ChartTitle(text: "Weekly Report"),
+                      enableAxisAnimation: true,
+                      trackballBehavior: TrackballBehavior(
+                          enable: true,
                           activationMode: ActivationMode.singleTap),
-                      primaryXAxis: CategoryAxis(
-                        isVisible: true,
-                      ),
-                      series: <ChartSeries>[
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group A',
-                          dataSource: datas[0],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          groupName: 'Group B',
-                          dataSource: datas[1],
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group C',
-                          dataSource: datas[2],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group D',
-                          dataSource: datas[3],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group E',
-                          dataSource: datas[4],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group F',
-                          dataSource: datas[5],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                        StackedColumnSeries<DataModel, String>(
-                          enableTooltip: true,
-                          isTrackVisible: true,
-                          groupName: 'Group G',
-                          dataSource: datas[6],
-                          xValueMapper: (DataModel data, _) =>
-                              data.x.substring(0, 2),
-                          yValueMapper: (DataModel data, _) => data.y,
-                        ),
-                      ],
+                      // legend: Legend(isVisible: true),
+                      legend:
+                          Legend(isVisible: true, position: LegendPosition.top),
+                      primaryXAxis: CategoryAxis(name: "min/Category"
+                          // isVisible: true,
+                          ),
+                      series: chartSeries,
                     ))
               ]),
       ),
@@ -154,6 +117,9 @@ class _ReportScreenState extends State<ReportScreen> {
         onTap: (int value) {
           if (value == 0) {
             Get.toNamed('/');
+          }
+          if (value == 1) {
+            Get.toNamed('/catogories');
           }
         },
         items: const [

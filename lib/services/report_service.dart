@@ -60,12 +60,12 @@ class ReportService {
     DateTime now = DateTime.now();
     List<List<DataModel>> weekly = [];
     List<Category> categories = AppConstants.categories;
-    for (var i = 0; i < 7; i++) {
-      List<DataModel> dayrec = [];
-      String formattedDate =
-          DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
 
-      for (var j = 0; j < categories.length; j++) {
+    for (var j = 0; j < categories.length; j++) {
+      List<DataModel> catrec = [];
+      for (var i = 0; i < 7; i++) {
+        String formattedDate =
+            DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
         final List maps = await database.query(
           'tasks',
           columns: [
@@ -80,10 +80,9 @@ class ReportService {
           where: 'date = ? And category_id = ?',
           whereArgs: [formattedDate, categories[j].id],
         );
-
         if (maps.isNotEmpty) {
           // log.i([categories[j].id, maps.isNotEmpty]);
-          dayrec.add(DataModel(
+          catrec.add(DataModel(
             y: maps[0]['total_seconds'],
             x: DateFormat('EEEE').format(now.subtract(Duration(days: i))),
             z: categories[j].name,
@@ -91,21 +90,61 @@ class ReportService {
         } else {
           // log.i([categories[j].id, maps.isNotEmpty]);
 
-          dayrec.add(DataModel(
+          catrec.add(DataModel(
             y: 0,
             x: DateFormat('EEEE').format(now.subtract(Duration(days: i))),
             z: categories[j].name,
           ));
         }
       }
-      //  await AppConstants.categories.forEach((element) async {
-
-      //     // log.i(maps);
-      //   });
-      // log.i(dayrec);
-
-      weekly.add(dayrec);
+      weekly.add(catrec);
     }
+    // for (var i = 0; i < 7; i++) {
+    //   List<DataModel> dayrec = [];
+    //   String formattedDate =
+    //       DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
+
+    //   for (var j = 0; j < categories.length; j++) {
+    //     final List maps = await database.query(
+    //       'tasks',
+    //       columns: [
+    //         '''SUM(strftime('%H', time) * 60 +
+    //          strftime('%M', time) * 1 +
+    //          strftime('%S', time) /60
+    //        ) AS total_seconds''',
+    //         'category_id',
+    //         'date'
+    //       ],
+    //       groupBy: 'category_id',
+    //       where: 'date = ? And category_id = ?',
+    //       whereArgs: [formattedDate, categories[j].id],
+    //     );
+
+    //     if (maps.isNotEmpty) {
+    //       // log.i([categories[j].id, maps.isNotEmpty]);
+    //       dayrec.add(DataModel(
+    //         y: maps[0]['total_seconds'],
+    //         x: DateFormat('EEEE').format(now.subtract(Duration(days: i))),
+    //         z: categories[j].name,
+    //       ));
+    //     } else {
+    //       // log.i([categories[j].id, maps.isNotEmpty]);
+
+    //       dayrec.add(DataModel(
+    //         y: 0,
+    //         x: DateFormat('EEEE').format(now.subtract(Duration(days: i))),
+    //         z: categories[j].name,
+    //       ));
+    //     }
+    //   }
+    //  await AppConstants.categories.forEach((element) async {
+
+    //     // log.i(maps);
+    //   });
+    // log.i(dayrec);
+
+    // weekly.add(dayrec);
+    // }
     // log.i(weekly[1]);
     // AppConstants.categories.forEach((element) async {
     //   List<DataModel> cate = [];
