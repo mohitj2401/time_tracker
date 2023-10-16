@@ -392,8 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10),
-                                        child: Expanded(
-                                            child: Text(tasks[index].name)),
+                                        child: Text(tasks[index].name),
                                       ),
                                     ),
                                     Expanded(
