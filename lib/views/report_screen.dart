@@ -113,13 +113,14 @@ class _ReportScreenState extends State<ReportScreen> {
               ]),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
         currentIndex: 2,
         onTap: (int value) {
           if (value == 0) {
-            Get.toNamed('/');
+            Get.offNamed('/');
           }
           if (value == 1) {
-            Get.toNamed('/catogories');
+            Get.offNamed('/catogories');
           }
         },
         items: const [

@@ -16,6 +16,7 @@ class AppRouter {
     GetPage(
       name: initial,
       page: () => const HomeScreen(),
+      transition: Transition.noTransition,
       children: [
         GetPage(
           name: taskDetail,
@@ -25,10 +26,12 @@ class AppRouter {
     ),
     GetPage(
       name: category,
+      transition: Transition.noTransition,
       page: () => const CategoriesScreen(),
     ),
     GetPage(
       name: report,
+      transition: Transition.noTransition,
       page: () => const ReportScreen(),
     ),
   ];

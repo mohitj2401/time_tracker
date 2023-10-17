@@ -47,4 +47,30 @@ class CategoryService {
       return 0;
     }
   }
+
+  Future<bool> defaultcategories() async {
+    try {
+      Database database = await DatabaseHelper().database;
+      Category cat = Category(
+          name: "Study",
+          created_at: DateTime.now(),
+          updated_at: DateTime.now());
+      await database.insert(tableName, cat.toMap());
+
+      cat = Category(
+          name: "Exercise",
+          created_at: DateTime.now(),
+          updated_at: DateTime.now());
+      await database.insert(tableName, cat.toMap());
+
+      cat = Category(
+          name: "Sleep",
+          created_at: DateTime.now(),
+          updated_at: DateTime.now());
+      await database.insert(tableName, cat.toMap());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

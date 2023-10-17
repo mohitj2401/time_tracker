@@ -104,23 +104,27 @@ class _HomeScreenState extends State<HomeScreen> {
     bool? val = pref.getBool('TIMER_EXIST');
     if (val != null && val) {
       String? DTval = pref.getString('DT');
-      // logger.i(DTval);
+      logger.i(DTval);
       DateTime d = DateTime.parse(DTval!);
-      // logger.i(d);
+      logger.i(d);
       DateTime d2 = DateTime.now();
-      // logger.i(d2);
+      logger.i(d2);
 
       Duration compareResult = d2.difference(d);
-      // logger.i(compareResult);
+      logger.i(compareResult.inSeconds);
 
       int? timerId = pref.getInt('TIMER_ID');
-      // logger.i(timerId);
-      if (timerId != null && timerId > 1) {
-        selectedTimer = timerId;
-        _stopWatchTimer.setPresetSecondTime(compareResult.inSeconds);
+      logger.i(timerId);
+      if (timerId != null && timerId > 0) {
+        try {
+          selectedTimer = timerId;
+          _stopWatchTimer.setPresetSecondTime(compareResult.inSeconds);
 
-        _stopWatchTimer.onStartTimer();
-        setState(() {});
+          _stopWatchTimer.onStartTimer();
+          setState(() {});
+        } catch (e) {
+          logger.e(e.toString());
+        }
       }
     }
 
@@ -291,11 +295,43 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: categories.isEmpty
             ? Center(
-                child: Container(
-                child: Text(
-                  "Please add Category first.",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    child: Text(
+                      "Please add category first.",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  Container(
+                    child: Text(
+                      "Or",
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        CategoryService service = CategoryService();
+                        bool res = await service.defaultcategories();
+                        if (res) {
+                          service.getAllCategory().then((value) {
+                            categories = value;
+                            AppConstants.categories = value;
+                            for (var element in value) {
+                              items.add(DropdownMenuItem(
+                                value: element.id,
+                                child: Text(element.name!),
+                              ));
+                            }
+                            getTask();
+                          });
+                          setState(() {});
+                          showToast("Default category added");
+                        } else {}
+                      },
+                      child: Text("Add default Category"))
+                ],
               ))
             : SingleChildScrollView(
                 child: Column(
@@ -550,8 +586,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         .getInstance();
                                                 pref.setBool(
                                                     'TIMER_EXIST', true);
-                                                pref.setString('DT',
-                                                    DateTime.now().toString());
+                                                pref.setString(
+                                                    'DT',
+                                                    DateTime.now()
+                                                        .subtract(Duration(
+                                                            seconds: val))
+                                                        .toString());
                                                 pref.setInt(
                                                     'TIMER_ID', selectedTimer);
                                                 setState(() {});
@@ -614,12 +654,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
         onTap: (int value) {
           if (value == 1) {
-            Get.toNamed('/catogories');
+            Get.offNamed('/catogories');
           }
           if (value == 2) {
-            Get.toNamed('/report');
+            Get.offNamed('/report');
           }
           // logger.i(value);
         },
@@ -644,18 +685,21 @@ class _HomeScreenState extends State<HomeScreen> {
       //     ],
       //   ),
       // ),
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        tooltip: 'Move to End',
-        onPressed: () {
-          controller.animateTo(99999,
-              duration: Duration(milliseconds: 100), curve: Curves.linear);
-        },
-        child: Icon(
-          Icons.keyboard_arrow_down,
-          // size: 50,
-        ),
-      ),
+      floatingActionButton: tasks.length > 6
+          ? FloatingActionButton(
+              mini: true,
+              tooltip: 'Move to End',
+              onPressed: () {
+                controller.animateTo(99999,
+                    duration: Duration(milliseconds: 100),
+                    curve: Curves.linear);
+              },
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                // size: 50,
+              ),
+            )
+          : null,
     );
   }
 }
