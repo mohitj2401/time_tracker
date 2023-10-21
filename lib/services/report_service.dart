@@ -1,19 +1,15 @@
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/models/datamodel.dart';
-import 'package:time_tracker/models/tasks.dart';
 import 'package:time_tracker/util/constant.dart';
-import 'package:time_tracker/util/toast.dart';
 
 class ReportService {
   String tableName = 'tasks';
 
   Future<List<DataModel>> getMonthlyReport() async {
-    Logger log = Logger();
+    // Logger log = Logger();
     Database database = await DatabaseHelper().database;
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -55,7 +51,7 @@ class ReportService {
   }
 
   Future<List<List<DataModel>>> getWeeklyReport() async {
-    Logger log = Logger();
+    // Logger log = Logger();
     Database database = await DatabaseHelper().database;
     DateTime now = DateTime.now();
     List<List<DataModel>> weekly = [];

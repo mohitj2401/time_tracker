@@ -4,7 +4,6 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/services/category_service.dart';
-import 'package:time_tracker/util/theme.dart';
 import 'package:time_tracker/util/toast.dart';
 import 'package:time_tracker/widgets/category_bottom_sheet.dart';
 

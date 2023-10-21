@@ -14,7 +14,6 @@ import 'package:time_tracker/providers/theme_provider.dart';
 import 'package:time_tracker/services/category_service.dart';
 import 'package:time_tracker/services/task_service.dart';
 import 'package:time_tracker/util/constant.dart';
-import 'package:time_tracker/util/theme.dart';
 import 'package:time_tracker/util/toast.dart';
 
 class HomeScreen extends StatefulWidget {

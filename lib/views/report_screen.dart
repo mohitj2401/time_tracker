@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -32,7 +31,7 @@ class _ReportScreenState extends State<ReportScreen> {
             //   isVisible: true,
             //   textStyle: TextStyle(fontSize: 14, color: Colors.black),
             // ),
-            dataLabelMapper: (DataModel data, _) => 'Minutes ${data.z}'!,
+            dataLabelMapper: (DataModel data, _) => 'Minutes ${data.z}',
             dataSource: element,
             xValueMapper: (DataModel data, _) => data.x.substring(0, 2),
             yValueMapper: (DataModel data, _) => data.y,
