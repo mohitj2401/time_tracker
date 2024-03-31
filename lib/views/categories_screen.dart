@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
@@ -37,7 +38,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     if (index == -1) {
       service.insertTask(category);
     } else {
-      showToast('Category Already Exits');
+      toast('Category Already Exits', context);
     }
     // categories.insert(0, category);
     categoryText.text = '';
@@ -45,12 +46,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     setState(() {});
   }
 
-  deleteCategory(int id) {
+  deleteCategory(int id, BuildContext context) {
     try {
-      service.deleteTask(id);
+      service.deleteTask(id, context);
       getCategory();
     } catch (e) {
-      showToast("Remove Task assoiciated to this category First",
+      toast("Remove Task assoiciated to this category First", context,
           isError: true);
     }
     // categories.removeWhere((element) => element.id == id);
@@ -128,7 +129,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   //                       print(categories[selectedCategory].toString());
   //                       setState(() {});
   //                     } else {
-  //                       showToast('Category Name Cannot be Empty');
+  //                       toast('Category Name Cannot be Empty');
   //                     }
   //                   } else {
   //                     // print(categoryText.text);
@@ -137,7 +138,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   //                         !categoryText.text.isBlank!) {
   //                       saveCategory(categoryText.text);
   //                     } else {
-  //                       showToast('Please Enter Category Name');
+  //                       toast('Please Enter Category Name');
   //                     }
   //                   }
   //                 },
@@ -233,10 +234,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   //       currentIndex: 1,
   //       onTap: (int value) {
   //         if (value == 0) {
-  //           Get.offNamed('/');
+  //           context.go('/');
   //         }
   //         if (value == 2) {
-  //           Get.offNamed('/report');
+  //           context.go('/report');
   //         }
   //       },
   //       items: const [
@@ -309,14 +310,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 context, categories[index], categoryText, () {
                               if (categoryText.text.isNotEmpty &&
                                   categoryText.text != '' &&
-                                  !categoryText.text.isBlank!) {
+                                  !categoryText.text.isEmpty) {
                                 CategoryService service = CategoryService();
                                 categories[index].name = categoryText.text;
                                 service.updateCategory(categories[index]);
                                 setState(() {});
                                 Navigator.pop(context);
                               } else {
-                                showToast('Please Enter Category Name');
+                                toast('Please Enter Category Name', context);
                               }
                             });
                             // deleteCategory(categories[index].id!);
@@ -325,7 +326,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            deleteCategory(categories[index].id!);
+                            deleteCategory(categories[index].id!, context);
                           },
                           icon: const Icon(Icons.delete),
                         ),
@@ -345,10 +346,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         currentIndex: 1,
         onTap: (int value) {
           if (value == 0) {
-            Get.offNamed('/');
+            context.go('/');
           }
           if (value == 2) {
-            Get.offNamed('/report');
+            context.go('/report');
           }
         },
         items: const [
@@ -366,11 +367,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           getCategoryBottonSheet(context, null, categoryText, () {
             if (categoryText.text.isNotEmpty &&
                 categoryText.text != '' &&
-                !categoryText.text.isBlank!) {
+                !categoryText.text.isEmpty) {
               saveCategory(categoryText.text);
               Navigator.pop(context);
             } else {
-              showToast('Please Enter Category Name');
+              toast('Please Enter Category Name', context);
             }
           });
         },

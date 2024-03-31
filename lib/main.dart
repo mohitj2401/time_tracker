@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:time_tracker/helper/router.dart';
@@ -24,20 +24,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get.find<MyCartController>().getCart();
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
-        return GetMaterialApp(
+        return MaterialApp.router(
           theme: Provider.of<ThemeProviders>(context).themeData,
           title: 'Time Tracker',
-          // color: ThemeProvider.appColor,
           debugShowCheckedModeBanner: false,
-          navigatorKey: Get.key,
-          initialRoute: AppRouter.initial,
-          getPages: AppRouter.routes,
-          defaultTransition: Transition.native,
-          // translations: LocaleString(),
-          // locale: const Locale('en', 'US'),
+          routerConfig: AppRouter.router,
         );
       },
     );

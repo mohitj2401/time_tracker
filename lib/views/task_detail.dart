@@ -1,7 +1,7 @@
 import 'package:duration/duration.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -12,8 +12,10 @@ import 'package:time_tracker/util/theme.dart';
 import 'package:time_tracker/util/toast.dart';
 
 class TaskDetailScreen extends StatefulWidget {
+  final Tasks task;
   const TaskDetailScreen({
     super.key,
+    required this.task,
   });
   // final Tasks task;
   @override
@@ -22,7 +24,7 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   bool isEdit = false;
-  Tasks arguments = Get.arguments;
+
   int selectedItem = 0;
   Logger log = Logger();
   TextEditingController name = TextEditingController();
@@ -54,7 +56,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     // log.i(arguments.name);
-    task = arguments;
+    task = widget.task;
     name.text = task.name;
     time.text = task.time;
     selectedItem = task.category_id;
@@ -76,7 +78,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       isEdit = false;
       setState(() {});
     } else {
-      showToast("Please Enter Task Field or Select Category", isError: true);
+      toast("Please Enter Task Field or Select Category", context,
+          isError: true);
     }
   }
 
@@ -86,7 +89,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Get.back(result: isEdit);
+            context.pop(isEdit);
           },
           icon: Icon(Icons.arrow_back_ios_new),
         ),
@@ -100,12 +103,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         actions: [
           IconButton(
             onPressed: () async {
-              bool val = await notificationDialog(
-                  "Warning", "You already have time stored for this task.");
+              bool val = true;
               // print(val);
               if (val) {
                 service.deleteTask(task.id!);
-                Get.back(result: true);
+                context.pop(true);
                 setState(() {});
               }
             },

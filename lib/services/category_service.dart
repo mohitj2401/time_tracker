@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:time_tracker/helper/datebase.dart';
 import 'package:time_tracker/models/category.dart';
@@ -33,7 +34,7 @@ class CategoryService {
     );
   }
 
-  Future<int> deleteTask(int id) async {
+  Future<int> deleteTask(int id, BuildContext context) async {
     Database database = await DatabaseHelper().database;
     try {
       return await database.delete(
@@ -42,7 +43,8 @@ class CategoryService {
         whereArgs: [id],
       );
     } catch (e) {
-      showToast("Remove Task assoiciated to this category ", isError: true);
+      toast("Remove Task assoiciated to this category ", context,
+          isError: true);
 
       return 0;
     }

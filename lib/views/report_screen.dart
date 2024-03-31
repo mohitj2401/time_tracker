@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:logger/logger.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -116,10 +117,10 @@ class _ReportScreenState extends State<ReportScreen> {
         currentIndex: 2,
         onTap: (int value) {
           if (value == 0) {
-            Get.offNamed('/');
+            context.go('/');
           }
           if (value == 1) {
-            Get.offNamed('/catogories');
+            context.go('/catogories');
           }
         },
         items: const [

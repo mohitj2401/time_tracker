@@ -1,13 +1,12 @@
 import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:time_tracker/controllers/theme_controller.dart';
 import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/models/tasks.dart';
 import 'package:time_tracker/providers/theme_provider.dart';
@@ -31,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController date = TextEditingController();
   TextEditingController time = TextEditingController();
   TextEditingController description = TextEditingController();
-  final ThemeController myController = Get.put(ThemeController());
+
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
   late SharedPreferences pref;
   List<Category> categories = [];
@@ -199,8 +198,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           selectedItem > 0) {
                                         saveTask();
                                       } else {
-                                        showToast(
+                                        toast(
                                             "Please Enter Task Field or Select Category",
+                                            context,
                                             isError: true);
                                       }
                                     },
@@ -326,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             getTask();
                           });
                           setState(() {});
-                          showToast("Default category added");
+                          toast("Default category added", context);
                         } else {}
                       },
                       child: Text("Add default Category"))
@@ -505,9 +505,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Card(
                             elevation: 2,
                             child: InkWell(
-                              onTap: () async {
-                                await Get.toNamed('/task-detail',
-                                    arguments: tasks[index]);
+                              onTap: () {
+                                context.go('/task-detail', extra: tasks[index]);
 
                                 getTask();
 
@@ -603,10 +602,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               alignment: Alignment.centerRight,
                                               onPressed: () async {
                                                 // print(tasks[index].time);
-                                                bool val = await notificationDialog(
-                                                    "Warning",
-                                                    "You already have time stored for this task.");
+                                                // bool val = await notificationDialog(
+                                                //     "Warning",
+                                                //     "You already have time stored for this task.");
                                                 // print(val);
+                                                bool val = true;
                                                 if (val) {
                                                   taskService.deleteTask(
                                                       tasks[index].id!);
@@ -621,10 +621,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                           if (isTodayTask)
                                             IconButton(
                                               onPressed: () async {
+                                                bool val = true;
+
                                                 // print(tasks[index].time);
-                                                bool val = await notificationDialog(
-                                                    "Warning",
-                                                    "You already have time stored for this task.");
+                                                // bool val = await notificationDialog(
+                                                //     "Warning",
+                                                //     "You already have time stored for this task.");
                                                 // print(val);
                                                 if (val) {
                                                   tasks[index].time =
@@ -656,10 +658,10 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         onTap: (int value) {
           if (value == 1) {
-            Get.offNamed('/catogories');
+            context.go('/catogories');
           }
           if (value == 2) {
-            Get.offNamed('/report');
+            context.go('/report');
           }
           // logger.i(value);
         },
