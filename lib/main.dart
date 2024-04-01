@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+
+import 'package:time_tracker/bloc/theme_bloc.dart';
 import 'package:time_tracker/helper/router.dart';
-import 'package:time_tracker/providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-            create: (BuildContext context) => ThemeProviders()),
-      ],
-      child: const MyApp(),
-    ),
+    const MyApp(),
   );
 }
 
@@ -26,11 +21,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
-        return MaterialApp.router(
-          theme: Provider.of<ThemeProviders>(context).themeData,
-          title: 'Time Tracker',
-          debugShowCheckedModeBanner: false,
-          routerConfig: AppRouter.router,
+        return BlocProvider(
+          create: (context) => ThemeBloc(),
+          child: BlocBuilder<ThemeBloc, ThemeData>(
+            builder: (context, themeData) => MaterialApp.router(
+              theme: themeData,
+              darkTheme: ThemeData.dark(),
+              title: 'Time Tracker',
+              debugShowCheckedModeBanner: false,
+              routerConfig: AppRouter.router,
+            ),
+          ),
         );
       },
     );

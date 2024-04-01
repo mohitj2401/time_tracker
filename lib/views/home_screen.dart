@@ -1,5 +1,6 @@
 import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -7,9 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:time_tracker/bloc/theme_bloc.dart';
 import 'package:time_tracker/models/category.dart';
 import 'package:time_tracker/models/tasks.dart';
-import 'package:time_tracker/providers/theme_provider.dart';
 import 'package:time_tracker/services/category_service.dart';
 import 'package:time_tracker/services/task_service.dart';
 import 'package:time_tracker/util/constant.dart';
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   saveTask() {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    logger.i(formattedDate);
+
     Tasks task = Tasks(
       category_id: selectedItem,
       date: formattedDate,
@@ -98,21 +99,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   timerExist() async {
     pref = await SharedPreferences.getInstance();
-
+    int? themeNumber = pref.getInt('THEME');
+    if (themeNumber != null) {
+      final themeBloc = BlocProvider.of<ThemeBloc>(context);
+      themeNumber == 0
+          ? themeBloc.add(LightThemeEvent())
+          : themeBloc.add(DarkThemeEvent());
+      // themeProvider.updateTheme(themeNumber);
+    }
     bool? val = pref.getBool('TIMER_EXIST');
     if (val != null && val) {
       String? DTval = pref.getString('DT');
-      logger.i(DTval);
+
       DateTime d = DateTime.parse(DTval!);
-      logger.i(d);
+
       DateTime d2 = DateTime.now();
-      logger.i(d2);
 
       Duration compareResult = d2.difference(d);
-      logger.i(compareResult.inSeconds);
 
       int? timerId = pref.getInt('TIMER_ID');
-      logger.i(timerId);
+
       if (timerId != null && timerId > 0) {
         try {
           selectedTimer = timerId;
@@ -124,12 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
           logger.e(e.toString());
         }
       }
-    }
-
-    int? themeNumber = pref.getInt('THEME');
-    if (themeNumber != null) {
-      context.read<ThemeProviders>().updateTheme(themeNumber);
-      // themeProvider.updateTheme(themeNumber);
     }
   }
 
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProviders>(context);
+    final themeBloc = BlocProvider.of<ThemeBloc>(context);
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: ThemeProvide.appColor,
@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 value: selectedItem,
                                 items: items,
                                 onChanged: (val) {
-                                  // logger.i(val);
+                                  //
                                   setState(() {
                                     selectedItem = val;
                                   });
@@ -277,12 +277,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             onPressed: () {
-              int nu = themeProvider.theme_number;
-              pref.setInt('THEME', nu == 1 ? 0 : 1);
+              themeBloc.add(themeBloc.state == ThemeData.dark()
+                  ? LightThemeEvent()
+                  : DarkThemeEvent());
 
-              themeProvider.updateTheme(nu == 1 ? 0 : 1);
+              pref.setInt('THEME', themeBloc.state == ThemeData.dark() ? 0 : 1);
             },
-            icon: themeProvider.theme_number == 0
+            icon: themeBloc.state == ThemeData.dark()
                 ? Icon(Icons.light_mode_outlined)
                 : Icon(Icons.dark_mode_outlined),
           )
@@ -491,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               await SharedPreferences
                                                   .getInstance();
                                           pref.setBool('TIMER_EXIST', false);
-                                          logger.i(time);
+
                                           setState(() {});
                                         },
                                         icon: const Icon(Icons.pause_circle),
@@ -663,7 +664,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 2) {
             context.go('/report');
           }
-          // logger.i(value);
+          //
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
